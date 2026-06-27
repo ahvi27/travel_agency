@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, ArrowRight } from "lucide-react";
 import { destinations } from "../data/destinations";
 import SectionHeader from "../components/SectionHeader";
+import DestinationModal from "../components/DestinationModal";
 
 const badgeColors = {
   Bestseller: "bg-accent/20 text-accent",
@@ -12,7 +14,7 @@ const badgeColors = {
   Value: "bg-teal-500/20 text-teal-400",
 };
 
-function DestinationCard({ dest, index }) {
+function DestinationCard({ dest, index, onExplore }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -21,7 +23,6 @@ function DestinationCard({ dest, index }) {
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="group relative rounded-3xl overflow-hidden cursor-pointer card-shadow"
     >
-      {/* Image */}
       <div className="relative h-72 overflow-hidden">
         <img
           src={dest.image}
@@ -31,18 +32,15 @@ function DestinationCard({ dest, index }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/20 to-transparent" />
 
-        {/* Badge */}
         <span className={`absolute top-4 left-4 text-xs font-semibold px-3 py-1 rounded-full ${badgeColors[dest.badge] ?? "bg-white/20 text-white"}`}>
           {dest.badge}
         </span>
 
-        {/* Price */}
         <div className="absolute top-4 right-4 glass rounded-2xl px-3 py-1.5">
           <span className="text-white font-bold text-sm">From ${dest.price}</span>
         </div>
       </div>
 
-      {/* Content */}
       <div className="absolute bottom-0 left-0 right-0 p-5">
         <div className="flex items-center gap-1.5 mb-1">
           <MapPin size={13} className="text-primary" />
@@ -53,7 +51,8 @@ function DestinationCard({ dest, index }) {
 
         <motion.button
           whileHover={{ x: 4 }}
-          className="flex items-center gap-1.5 text-primary text-sm font-semibold"
+          onClick={() => onExplore(dest)}
+          className="flex items-center gap-1.5 text-primary text-sm font-semibold cursor-pointer"
         >
           Explore <ArrowRight size={14} />
         </motion.button>
@@ -63,6 +62,8 @@ function DestinationCard({ dest, index }) {
 }
 
 export default function Destinations() {
+  const [selectedDest, setSelectedDest] = useState(null);
+
   return (
     <section id="destinations" className="py-24 px-4 sm:px-6 max-w-7xl mx-auto">
       <SectionHeader
@@ -73,7 +74,7 @@ export default function Destinations() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {destinations.map((dest, i) => (
-          <DestinationCard key={dest.id} dest={dest} index={i} />
+          <DestinationCard key={dest.id} dest={dest} index={i} onExplore={setSelectedDest} />
         ))}
       </div>
 
@@ -86,6 +87,8 @@ export default function Destinations() {
           View All Destinations
         </motion.button>
       </div>
+
+      <DestinationModal dest={selectedDest} onClose={() => setSelectedDest(null)} />
     </section>
   );
 }
