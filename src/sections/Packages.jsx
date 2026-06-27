@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Star, Clock, CheckCircle2, ArrowRight } from "lucide-react";
 import { packages } from "../data/destinations";
 import SectionHeader from "../components/SectionHeader";
+import BookingModal from "../components/BookingModal";
 
 const categoryColors = {
   Luxury: "text-purple-400 bg-purple-400/10",
@@ -9,7 +11,7 @@ const categoryColors = {
   Adventure: "text-emerald-400 bg-emerald-400/10",
 };
 
-function PackageCard({ pkg, index }) {
+function PackageCard({ pkg, index, onBook }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -18,7 +20,6 @@ function PackageCard({ pkg, index }) {
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="group bg-white dark:bg-white/5 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl hover:shadow-primary/10 transition-shadow duration-300 border border-gray-100 dark:border-white/10"
     >
-      {/* Image */}
       <div className="relative h-52 overflow-hidden">
         <img
           src={pkg.image}
@@ -36,7 +37,6 @@ function PackageCard({ pkg, index }) {
         </div>
       </div>
 
-      {/* Body */}
       <div className="p-6">
         <div className="flex items-start justify-between mb-2">
           <div>
@@ -50,7 +50,6 @@ function PackageCard({ pkg, index }) {
           </div>
         </div>
 
-        {/* Services */}
         <ul className="mt-4 space-y-1.5">
           {pkg.services.slice(0, 4).map((s) => (
             <li key={s} className="flex items-center gap-2">
@@ -70,7 +69,8 @@ function PackageCard({ pkg, index }) {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-sky-400 transition-colors shadow-md shadow-primary/20"
+            onClick={() => onBook(pkg)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-sky-400 transition-colors shadow-md shadow-primary/20 cursor-pointer"
           >
             Book Now <ArrowRight size={14} />
           </motion.button>
@@ -81,6 +81,8 @@ function PackageCard({ pkg, index }) {
 }
 
 export default function Packages() {
+  const [selectedPkg, setSelectedPkg] = useState(null);
+
   return (
     <section id="packages" className="py-24 bg-gray-50 dark:bg-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -92,10 +94,12 @@ export default function Packages() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {packages.map((pkg, i) => (
-            <PackageCard key={pkg.id} pkg={pkg} index={i} />
+            <PackageCard key={pkg.id} pkg={pkg} index={i} onBook={setSelectedPkg} />
           ))}
         </div>
       </div>
+
+      <BookingModal pkg={selectedPkg} onClose={() => setSelectedPkg(null)} />
     </section>
   );
 }
